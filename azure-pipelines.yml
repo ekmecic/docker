@@ -1,0 +1,31 @@
+name: 'Docker build'
+jobs:
+- job: latest_versions
+  timeoutInMinutes: 360
+  pool:
+     vmImage: 'Ubuntu 16.04'
+  strategy:
+    matrix:
+      micro_cpp_llvm:
+        NAME: micro_cpp_llvm
+  steps:
+    - script: docker login -u ekmecic -p $(docker_pwd)
+      displayName: docker login
+    - script: docker build -t ekmecic/$NAME $NAME/ && docker push ekmecic/$NAME
+      displayName: $(NAME)
+
+- job: tagged_llvm
+  timeoutInMinutes: 360
+  pool:
+     vmImage: 'Ubuntu 16.04'
+  strategy:
+    matrix:
+      LLVM8:
+        LLVM_FULL_VERSION: 8.0.0
+        CLANG_BINARY: clang-8
+        TAG: llvm8
+  steps:
+    - script: docker login -u ekmecic -p $(docker_pwd)
+      displayName: docker login
+    - script: docker build --build-arg LLVM_FULL_VERSION=$LLVM_FULL_VERSION --build-arg CLANG_BINARY=$CLANG_BINARY -t ekmecic/micro_cpp_llvm:$TAG micro_cpp_llvm/ && docker push ekmecic/micro_cpp_llvm:$TAG
+      displayName: micro_cpp_llvm $(TAG)
