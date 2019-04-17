@@ -5,23 +5,13 @@ WORKDIR /root
 ARG LLVM_FULL_VERSION=8.0.0
 ARG CLANG_BINARY=clang-8
 
-COPY $PATCH /root/$PATCH
-
 # install build dependencies
 
 RUN apk update && apk upgrade \
     && apk add --no-cache ca-certificates \
     && rm -rf /var/cache/apk/* \
 # install core tools
-    && apk add --no-cache libc-dev gcc g++ make \
-# install bash for convenience
-   && apk add --no-cache bash \
-# install git to fetch submodules
-   && apk add --no-cache git \
-# install buildsystem
-   && apk add --no-cache cmake \
-# LLVM+clang dependencies
-   && apk update && apk add --no-cache python3 ninja \
+    && apk add --no-cache libc-dev gcc g++ make bash git cmake python3 ninja\
 # download source code
     && wget -q http://releases.llvm.org/$LLVM_FULL_VERSION/llvm-$LLVM_FULL_VERSION.src.tar.xz -O llvm.tar.xz \
     && wget -q http://releases.llvm.org/$LLVM_FULL_VERSION/cfe-$LLVM_FULL_VERSION.src.tar.xz  -O clang.tar.xz \
@@ -46,7 +36,7 @@ RUN apk update && apk upgrade \
 # remove shared libraries that were built anyway
     && find /opt/llvm/lib \( -type f -or -type l \) \( -name '*.so' -or -name '*.so.*' \) -delete \
 # remove build dependencies
-    && apk del -r python3 ninja \
+    && apk del -r python3 ninja
 
 # update PATH
 ENV PATH="/opt/llvm/bin:${PATH}"
