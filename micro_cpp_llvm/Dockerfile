@@ -19,7 +19,7 @@ RUN apk update && apk upgrade \
 # install git to fetch submodules
    && apk add --no-cache git \
 # install buildsystem
-   && apk add --no-cache cmake
+   && apk add --no-cache cmake \
 # LLVM+clang dependencies
    && apk update && apk add --no-cache python3 ninja \
 # download source code
